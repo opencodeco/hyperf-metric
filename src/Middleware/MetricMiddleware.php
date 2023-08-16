@@ -46,7 +46,7 @@ class MetricMiddleware implements MiddlewareInterface
 
             return $response;
         } catch (Throwable $exception) {
-            $this->countException($request, $exception);
+            $this->countException($request);
             $timer->end($labels);
 
             throw $exception;
@@ -65,7 +65,7 @@ class MetricMiddleware implements MiddlewareInterface
         return $dispatched->handler->route;
     }
 
-    protected function countException(ServerRequestInterface $request, Throwable $exception): void
+    protected function countException(ServerRequestInterface $request): void
     {
         $labels = [
             'request_path' => $this->getPath($request),
