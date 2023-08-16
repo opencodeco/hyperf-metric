@@ -70,10 +70,6 @@ class MetricMiddleware implements MiddlewareInterface
         $labels = [
             'request_path' => $this->getPath($request),
             'request_method' => $request->getMethod(),
-            'class' => $exception::class,
-            'message' => $exception->getMessage(),
-            'code' => (string) $exception->getCode(),
-            'line' => (string) $exception->getLine(),
         ];
 
         Metric::count('exception_count', 1, $labels);
