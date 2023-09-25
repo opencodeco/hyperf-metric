@@ -1,0 +1,37 @@
+version: '3'
+services:
+  image:
+    container_name: hyperf-metric
+    image: hyperf-metric
+    build:
+      context: .
+      args:
+        APP_ENV: dev
+        COMPOSER_AUTH: ${COMPOSER_AUTH}
+
+  composer:
+    container_name: composer.hyperf-metric
+    image: hyperf-metric
+    depends_on:
+      - image
+    entrypoint: composer
+    command: validate
+    environment:
+      COMPOSER_AUTH: ${COMPOSER_AUTH}
+    volumes:
+      - ./:/opt
+
+  app:
+    container_name: hyperf-metric_app
+    image: hyperf-metric
+    entrypoint: php
+    tty: true
+    command: '-S 0.0.0.0:8080'
+    volumes:
+      - ./:/opt
+    networks:
+      - opencodeco
+
+networks:
+  opencodeco:
+    external: true
