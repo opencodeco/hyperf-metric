@@ -1,0 +1,82 @@
+#!/usr/bin/env sh
+
+# source .env
+
+CMD=$(echo ${1:-help} | tr '-' '_')
+ARGS=${@:2}
+
+build() {
+    docker-compose build hyperf-metric $@
+}
+
+composer() {
+    docker-compose run --rm hyperf-metric -c "composer $@"
+}
+
+test() {
+    docker-compose run --rm hyperf-metric -c "composer install && composer test $@"
+}
+
+coverage() {
+    if [ $# -eq 0 ]; then
+        docker-compose run --rm hyperf-metric -c "composer install && composer test:coverage:clover"    
+    else
+            case "$1" in
+                "clover")
+                    docker-compose run --rm hyperf-metric -c "composer install && composer test:coverage:clover"
+                    ;;
+                "html")
+                    PORT=${2:-8888}
+                    open "http://localhost:$PORT"
+                    docker-compose run --rm -p $PORT:$PORT hyperf-metric -c "composer install && composer test:coverage:html && php -S 0.0.0.0:$PORT -t tests/reports"
+                    ;;
+                *)
+                    echo "Coverage report format unknown: $1"
+                    ;;
+            esac
+    fi
+}
+
+fixer(){
+    docker-compose run --rm hyperf-metric -c "composer install && composer cs-fix $@"
+}
+
+analyse() {
+    docker-compose run --rm hyperf-metric -c "composer install && composer analyse $@"
+}
+
+rector() {
+    docker-compose run --rm hyperf-metric -c "composer install && composer rector $@"
+}
+
+logs() {
+    docker-compose logs -f $@
+}
+
+sh() {
+    if [ $# -eq 0 ]; then
+        docker-compose run --rm hyperf-metric
+    else
+        for arg in "$@"; do
+            args+="$arg " 
+        done
+        docker-compose run --rm hyperf-metric -c "$args"
+    fi
+}
+
+help() {
+    echo "Usage: run [command] [args]"
+    echo ""
+    echo "Commands:"
+    echo "  help          Show this help message"
+    echo "  build         Build docker image"
+    echo "  composer      Run composer"
+    echo "  test          Run tests"
+    echo "  coverage      Show coverage"
+    echo "  analyse       Show phpstan"
+    echo "  rector        Show rector"
+    echo "  logs          Show logs"
+    echo "  sh            Run shell"
+}
+
+$CMD $ARGS
