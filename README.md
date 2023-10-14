@@ -17,3 +17,16 @@ composer config repositories.opencodeco composer https://composer.opencodeco.dev
 ```shell
 composer update hyperf/metric
 ```
+
+### Development
+| Command           | Description              |
+|-------------------|--------------------------|
+| `./run help`      | Build an image           |
+| `./run build`     | Install dependencies     |
+| `./run composer`  | Update dependencies      |
+| `./run test`      | Execute tests            |
+| `./run coverage`  | Execute tests            |
+| `./run analyse`   | Execute tests            |
+| `./run rector`    | Execute tests            |
+| `./run logs`      | Execute tests            |
+| `./run sh`        | Access container shell   |
