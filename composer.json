@@ -63,8 +63,9 @@
         }
     },
     "scripts": {
-	"test": "co-phpunit",
-        "test-coverage": "co-phpunit --coverage-clover clover.xml",
+	    "test": "co-phpunit",
+        "test:coverage:clover": "co-phpunit --coverage-clover tests/reports/clover.xml",
+        "test:coverage:html": "co-phpunit --coverage-html tests/reports/",
         "cs-fix": "php-cs-fixer fix $1",
         "analyse": "phpstan analyse --memory-limit=-1 -l 5 -c phpstan.neon",
         "rector": "rector process --clear-cache"
