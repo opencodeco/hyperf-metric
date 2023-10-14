@@ -71,8 +71,9 @@ help() {
     echo "  composer      Run composer"
     echo "  test          Run tests"
     echo "  coverage      Show coverage"
-    echo "  analyse       Show phpstan"
-    echo "  rector        Show rector"
+    echo "  fixer          Run php-cs-fixer"
+    echo "  analyse       Run phpstan tests"
+    echo "  rector        Run rector tests"
     echo "  logs          Show logs"
     echo "  sh            Run shell"
 }
