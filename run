@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-# source .env
-
 CMD=$(echo ${1:-help} | tr '-' '_')
 ARGS=${@:2}
 
