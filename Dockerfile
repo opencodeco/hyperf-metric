@@ -8,7 +8,8 @@ RUN set -ex \
     && cd /etc/php82 \
     && { \
         echo "zend_extension=xdebug.so"; \
-        echo "xdebug.mode=coverage"; \
+        echo "xdebug.mode=develop,debug,coverage"; \
+        echo "xdebug.idekey=PHPSTORM"; \
     } | tee conf.d/50_xdebug.ini \
     && rm -rf /var/cache/apk/* /tmp/* /usr/share/man \
     && echo -e "\033[42;37m Build Completed :).\033[0m\n"
