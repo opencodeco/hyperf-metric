@@ -1,8 +1,5 @@
 FROM hyperf/hyperf:8.2-alpine-v3.18-swoole-v5.0.3
 
-ENV APP_ENV=dev \
-    SCAN_CACHEABLE=(true)
-
 RUN set -ex \
     && apk add --no-cache php82-pecl-xdebug \
     && cd /etc/php82 \
