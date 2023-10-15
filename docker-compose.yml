@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 
 name: hyperf-metric
 services:
@@ -8,5 +8,5 @@ services:
     tty: true
     build:
       context: .
-      args:
-        timezone: "America/Sao_Paulo"
+    volumes:
+    - ./:/opt/www
