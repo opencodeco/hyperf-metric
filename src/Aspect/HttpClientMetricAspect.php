@@ -21,7 +21,6 @@ use Hyperf\Di\Aop\AroundInterface;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Metric\Support\Uri as SupportUri;
 use Hyperf\Metric\Timer;
-use Hyperf\Stringable\Str;
 use Psr\Http\Message\ResponseInterface;
 
 class HttpClientMetricAspect implements AroundInterface
@@ -79,11 +78,11 @@ class HttpClientMetricAspect implements AroundInterface
     {
         return function (TransferException $exception) use ($timer, $labels) {
             $labels['http_status_code'] = '';
-            $labels['message'] = Str::snake($exception->getMessage());
+            $labels['message'] = 'connect_error';
 
             if ($exception instanceof RequestException) {
                 $labels['http_status_code'] = (string) $exception->getResponse()->getStatusCode();
-                $labels['message'] = 'request_exception';
+                $labels['message'] = 'request_error';
             }
 
             $timer->end($labels);
