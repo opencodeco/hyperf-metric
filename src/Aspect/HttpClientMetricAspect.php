@@ -13,6 +13,7 @@ namespace Hyperf\Metric\Aspect;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Promise\Create;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Uri;
@@ -21,7 +22,6 @@ use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Metric\Support\Uri as SupportUri;
 use Hyperf\Metric\Timer;
 use Hyperf\Stringable\Str;
-use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class HttpClientMetricAspect implements AroundInterface
@@ -77,7 +77,7 @@ class HttpClientMetricAspect implements AroundInterface
 
     private function onRejected(Timer $timer, array $labels): callable
     {
-        return function (RequestException|NetworkExceptionInterface $exception) use ($timer, $labels) {
+        return function (TransferException $exception) use ($timer, $labels) {
             $labels['http_status_code'] = '';
             $labels['message'] = Str::snake($exception->getMessage());
 
