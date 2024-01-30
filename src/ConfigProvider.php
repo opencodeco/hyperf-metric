@@ -21,7 +21,6 @@ use Hyperf\Metric\Aspect\RedisMetricAspect;
 use Hyperf\Metric\Contract\MetricFactoryInterface;
 use Hyperf\Metric\Contract\SqlSanitizerInterface;
 use Hyperf\Metric\Listener\DbQueryExecutedMetricListener;
-use Domnikl\Statsd\Connection\UdpSocket;
 use Hyperf\Metric\Adapter\RemoteProxy\MetricCollectorFactory;
 use Hyperf\Metric\Contract\MetricCollectorInterface;
 use Hyperf\Metric\Listener\MetricBufferWatcher;
