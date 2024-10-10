@@ -11,6 +11,7 @@ declare(strict_types=1);
  */
 namespace Hyperf\Metric\Middleware;
 
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\Metric\Metric;
 use Hyperf\Metric\Support\Uri;
@@ -23,6 +24,14 @@ use Throwable;
 
 class MetricMiddleware implements MiddlewareInterface
 {
+    protected array $config;
+
+    public function __construct(
+        ConfigInterface $config,
+    ) {
+        $this->config = $config->get('metric');
+    }
+
     /**
      * Process an incoming server request.
      * Processes an incoming server request in order to produce a response.
@@ -31,6 +40,10 @@ class MetricMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        if (! empty($this->config['ignore_path']) && preg_match($this->config['ignore_path'], $request->getUri()->getPath())) {
+            return $handler->handle($request);
+        }
+
         $labels = [
             'request_status' => '500',
             'request_path' => $this->getPath($request),
