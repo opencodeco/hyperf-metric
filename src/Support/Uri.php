@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @contact  leo@opencodeco.dev
  * @license  https://github.com/opencodeco/hyperf-metric/blob/main/LICENSE
  */
+
 namespace Hyperf\Metric\Support;
 
 final class Uri
@@ -17,6 +18,7 @@ final class Uri
     {
         return preg_replace(
             [
+                '/\/(?<=\/)[ED]\d{8}\d{12}[0-9a-zA-Z]{11}(?=\/)?/',
                 '/\/(?<=\/)[a-f0-9]{40}(?=\/)?/i',
                 '/\/(?<=\/)([A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12})(?=\/)?/i',
                 '/\/(?<=\/)([A-Z]{3}-?\d[0-9A-Z]\d{2})(?=\/)?/i',
@@ -24,6 +26,7 @@ final class Uri
                 '/\/(?<=\/)\d+(?=\/)?/',
             ],
             [
+                '/<E2E-ID>',
                 '/<SHA1>',
                 '/<UUID>',
                 '/<LICENSE-PLATE>',

@@ -118,4 +118,18 @@ final class UriTest extends TestCase
         self::assertSame('/v8/test/<SHA1>/<SHA1>/<SHA1>/', Uri::sanitize('/v8/test/141da78905dcaa7ed8d4da7c3f49a2415ebdc110/141da78905dcaa7ed8d4da7c3f49a2415ebdc110/141da78905dcaa7ed8d4da7c3f49a2415ebdc110/'));
         self::assertSame('/v8/test/<SHA1>/<SHA1>/<SHA1>/', Uri::sanitize('/v8/test/7110EDA4D09E062AA5E4A390B0A572AC0D2C0220/7110EDA4D09E062AA5E4A390B0A572AC0D2C0220/7110EDA4D09E062AA5E4A390B0A572AC0D2C0220/'));
     }
+
+    public function testSanitizeEndToEndId(): void
+    {
+        $e2eid = 'E99999999202401010000abcDEF12345';
+
+        self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
+        self::assertSame('/v2/test/<E2E-ID>', Uri::sanitize("/v2/test/{$e2eid}"));
+        self::assertSame('/v3/test/<E2E-ID>/bar', Uri::sanitize("/v3/test/{$e2eid}/bar"));
+        self::assertSame('/v4/test/<E2E-ID>/bar/<E2E-ID>/', Uri::sanitize("/v4/test/{$e2eid}/bar/{$e2eid}/"));
+        self::assertSame('/v5/test/<E2E-ID>/<E2E-ID>', Uri::sanitize("/v5/test/{$e2eid}/{$e2eid}"));
+        self::assertSame('/v6/test/<E2E-ID>/<E2E-ID>/', Uri::sanitize("/v6/test/{$e2eid}/{$e2eid}/"));
+        self::assertSame('/v7/test/<E2E-ID>/<E2E-ID>/<E2E-ID>', Uri::sanitize("/v7/test/{$e2eid}/{$e2eid}/{$e2eid}"));
+        self::assertSame('/v8/test/<E2E-ID>/<E2E-ID>/<E2E-ID>/', Uri::sanitize("/v8/test/{$e2eid}/{$e2eid}/{$e2eid}/"));
+    }
 }
