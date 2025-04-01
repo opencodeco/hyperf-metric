@@ -60,7 +60,7 @@ final class SqlSanitizerTest extends TestCase
         );
 
         self::assertSame(
-            'select * from `cards` where (`user_id` = ?) LIMIT ?',
+            'select * from `cards` where (`user_id` = ?) LIMIT ? OFFSET ?',
             $sanitizer->sanitize('select * from `cards` where (`user_id` = 200093484) LIMIT 100 OFFSET 100')
         );
     }
