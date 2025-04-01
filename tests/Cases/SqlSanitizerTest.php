@@ -49,4 +49,19 @@ final class SqlSanitizerTest extends TestCase
             $sanitizer->sanitize('select * from `cards` where `owner_id` not in (1260361, 903023958, 880427302)')
         );
     }
+
+    public function testSanitizeLimitAndOffset(): void
+    {
+        $sanitizer = new SqlSanitizer();
+
+        self::assertSame(
+            'select * from `cards` where (`user_id` = ?) LIMIT ?',
+            $sanitizer->sanitize('select * from `cards` where (`user_id` = 200093484) LIMIT 100')
+        );
+
+        self::assertSame(
+            'select * from `cards` where (`user_id` = ?) LIMIT ?',
+            $sanitizer->sanitize('select * from `cards` where (`user_id` = 200093484) LIMIT 100 OFFSET 100')
+        );
+    }
 }

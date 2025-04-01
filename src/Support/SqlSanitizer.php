@@ -22,6 +22,8 @@ class SqlSanitizer implements SqlSanitizerInterface
             '/(?<=\()\d+(?=,\s)/',
             '/(?<=,\s)\d+(?=,\s)/',
             '/(?<=,\s)\d+(?=\))/',
+            '/(?<=LIMIT\s)\d+/',
+            '/(?<=OFFSET\s)\d+/',
         ];
 
         return preg_replace($patterns, array_fill(0, count($patterns), '?'), $sql);
