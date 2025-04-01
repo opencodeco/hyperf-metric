@@ -55,13 +55,13 @@ final class SqlSanitizerTest extends TestCase
         $sanitizer = new SqlSanitizer();
 
         self::assertSame(
-            'select * from `cards` where (`user_id` = ?) LIMIT ?',
-            $sanitizer->sanitize('select * from `cards` where (`user_id` = 200093484) LIMIT 100')
+            'select * from `cards` where `user_id` in (?) LIMIT ?',
+            $sanitizer->sanitize('select * from `cards` where `user_id` in (1) LIMIT 100')
         );
 
         self::assertSame(
-            'select * from `cards` where (`user_id` = ?) LIMIT ? OFFSET ?',
-            $sanitizer->sanitize('select * from `cards` where (`user_id` = 200093484) LIMIT 100 OFFSET 100')
+            'select * from `cards` where `user_id` in (?) LIMIT ? OFFSET ?',
+            $sanitizer->sanitize('select * from `cards` where `user_id` in (1) LIMIT 100 OFFSET 100')
         );
     }
 }
