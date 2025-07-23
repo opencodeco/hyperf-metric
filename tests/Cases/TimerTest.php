@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @contact  leo@opencodeco.dev
  * @license  https://github.com/opencodeco/hyperf-metric/blob/main/LICENSE
  */
+
 namespace HyperfTest\Metric\Cases;
 
 use Hyperf\Context\ApplicationContext;
@@ -60,7 +61,7 @@ class TimerTest extends TestCase
     private function mockContainer()
     {
         $container = Mockery::mock(Container::class);
-        $container->shouldReceive('make')->with(MetricFactoryInterface::class, [])->andReturn(new class() {
+        $container->shouldReceive('make')->with(MetricFactoryInterface::class, [])->andReturn(new class {
             public function makeHistogram($name, $labels)
             {
                 $histogram = Mockery::mock(HistogramInterface::class);

@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @contact  leo@opencodeco.dev
  * @license  https://github.com/opencodeco/hyperf-metric/blob/main/LICENSE
  */
+
 namespace HyperfTest\Metric\Cases;
 
 use Hyperf\Config\Config;
@@ -52,7 +53,7 @@ class OnWorkerStartTest extends TestCase
 
         $l = new OnWorkerStart($container);
 
-        $l->process(new class() {
+        $l->process(new class {
             public $workerId = 1;
         });
 
@@ -74,7 +75,7 @@ class OnWorkerStartTest extends TestCase
         $container->shouldReceive('get')->with(ConfigInterface::class)->andReturn($config);
         $container->shouldReceive('get')->with(MetricFactoryInterface::class)->andReturn($factory);
         $container->shouldReceive('get')->with(EventDispatcherInterface::class)->andReturn(
-            new class() {
+            new class {
                 public function dispatch()
                 {
                     return true;
@@ -82,10 +83,10 @@ class OnWorkerStartTest extends TestCase
             }
         )->once();
         $l = new OnWorkerStart($container);
-        $l->process(new class() {
+        $l->process(new class {
             public $workerId = 0;
         });
-        $l->process(new class() {
+        $l->process(new class {
             public $workerId = 1;
         });
         $this->assertTrue(true);
@@ -105,7 +106,7 @@ class OnWorkerStartTest extends TestCase
         $container->shouldReceive('get')->with(ConfigInterface::class)->andReturn($config);
         $container->shouldReceive('get')->with(MetricFactoryInterface::class)->andReturn($factory);
         $l = new OnWorkerStart($container);
-        $l->process(new class() {
+        $l->process(new class {
             public $workerId = 0;
         });
         $this->assertTrue(true);

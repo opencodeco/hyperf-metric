@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @contact  leo@opencodeco.dev
  * @license  https://github.com/opencodeco/hyperf-metric/blob/main/LICENSE
  */
+
 namespace HyperfTest\Metric\Adapter\Prometheus;
 
 use Hyperf\Metric\Adapter\Prometheus\Redis;
