@@ -26,6 +26,7 @@ final class Uri
                     '/\/(?<=\/)([A-Z]{3}-?\d[0-9A-Z]\d{2})(?=\/)?/i',
                     '/\/(?<=\/)[0-9A-F]{16,24}(?=\/)?/i',
                     '/\/(?<=\/)\d+(?=\/)?/',
+                    '/\/(?<=\/)R[RN]\d{16}[A-Za-z0-9]{11}/',
                 ],
             ),
             array_merge(
@@ -37,6 +38,7 @@ final class Uri
                     '/<LICENSE-PLATE>',
                     '/<OID>',
                     '/<NUMBER>',
+                    '/<EXTERNAL-ID>',
                 ],
             ),
             '/' . ltrim($uri, '/'),

@@ -150,4 +150,15 @@ final class UriTest extends TestCase
         self::assertSame('/v7/test/<SHA256-ID>/<SHA256-ID>/<SHA256-ID>', Uri::sanitize('/v7/test/54cf575c04fdef4667094b6fc4fab8014dd3fa53576b644ec399452c43b5e7f7/54cf575c04fdef4667094b6fc4fab8014dd3fa53576b644ec399452c43b5e7f7/54cf575c04fdef4667094b6fc4fab8014dd3fa53576b644ec399452c43b5e7f7', $uriMask));
         self::assertSame('/v8/test/<SHA256-ID>/<SHA256-ID>/<SHA256-ID>/', Uri::sanitize('/v8/test/54cf575c04fdef4667094b6fc4fab8014dd3fa53576b644ec399452c43b5e7f7/54cf575c04fdef4667094b6fc4fab8014dd3fa53576b644ec399452c43b5e7f7/54cf575c04fdef4667094b6fc4fab8014dd3fa53576b644ec399452c43b5e7f7/', $uriMask));
     }
+
+    public function testClearUriExternalIds(): void
+    {
+        self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
+        self::assertSame('/v1/test/<EXTERNAL-ID>', Uri::sanitize('/v1/test/RR2101818220123720H9KJTERfw1a'));
+        self::assertSame('/v3/test/<EXTERNAL-ID>/bar', Uri::sanitize('/v3/test/RN2401818220250720G4KJTQyU6Ds/bar'));
+        self::assertSame('/v4/test/<EXTERNAL-ID>/bar/<EXTERNAL-ID>/', Uri::sanitize('/v4/test/RR2101818220123720H9KJTERfw1a/bar/RN2401818220250720G4KJTQyU6Ds/'));
+        self::assertSame('/v5/test/<EXTERNAL-ID>/<EXTERNAL-ID>', Uri::sanitize('/v5/test/RR2101818220123720H9KJTERfw1a/RN2401818220250720G4KJTQyU6Ds'));
+        self::assertSame('/v7/test/<EXTERNAL-ID>/<EXTERNAL-ID>/<EXTERNAL-ID>/', Uri::sanitize('/v7/test/RR2101818220123720H9KJTERfw1a/RN2001818220123720H9KJTERBd52/RR2123818220123730H9KJTERBd52/'));
+        self::assertSame('/v9/test/<EXTERNAL-ID>/bar/<NUMBER>', Uri::sanitize('/v9/test/RR2101818220123720H9KJTERfw1a/bar/12345'));
+    }
 }
