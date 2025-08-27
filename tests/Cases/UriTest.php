@@ -161,4 +161,18 @@ final class UriTest extends TestCase
         self::assertSame('/v7/test/<EXTERNAL-ID>/<EXTERNAL-ID>/<EXTERNAL-ID>/', Uri::sanitize('/v7/test/RR2101818220123720H9KJTERfw1a/RN2001818220123720H9KJTERBd52/RR2123818220123730H9KJTERBd52/'));
         self::assertSame('/v9/test/<EXTERNAL-ID>/bar/<NUMBER>', Uri::sanitize('/v9/test/RR2101818220123720H9KJTERfw1a/bar/12345'));
     }
+
+    public function testClearUriBillUuid(): void
+    {
+        $billUuid = 'BILL-123e4567-e89b-12d3-a456-426614174000';
+
+        self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
+        self::assertSame('/v2/test/<BILL-UUID>', Uri::sanitize("/v2/test/{$billUuid}"));
+        self::assertSame('/v3/test/<BILL-UUID>/bar', Uri::sanitize("/v3/test/{$billUuid}/bar"));
+        self::assertSame('/v4/test/<BILL-UUID>/bar/<BILL-UUID>/', Uri::sanitize("/v4/test/{$billUuid}/bar/{$billUuid}/"));
+        self::assertSame('/v5/test/<BILL-UUID>/<BILL-UUID>', Uri::sanitize("/v5/test/{$billUuid}/{$billUuid}"));
+        self::assertSame('/v6/test/<BILL-UUID>/<BILL-UUID>/', Uri::sanitize("/v6/test/{$billUuid}/{$billUuid}/"));
+        self::assertSame('/v7/test/<BILL-UUID>/<BILL-UUID>/<BILL-UUID>', Uri::sanitize("/v7/test/{$billUuid}/{$billUuid}/{$billUuid}"));
+        self::assertSame('/v8/test/<BILL-UUID>/<BILL-UUID>/<BILL-UUID>/', Uri::sanitize("/v8/test/{$billUuid}/{$billUuid}/{$billUuid}/"));
+    }
 }
