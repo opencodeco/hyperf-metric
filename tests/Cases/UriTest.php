@@ -162,17 +162,98 @@ final class UriTest extends TestCase
         self::assertSame('/v9/test/<EXTERNAL-ID>/bar/<NUMBER>', Uri::sanitize('/v9/test/RR2101818220123720H9KJTERfw1a/bar/12345'));
     }
 
-    public function testClearUriBillUuid(): void
+    public function testClearUriPrefixedUuid(): void
     {
-        $billUuid = 'BILL-123e4567-e89b-12d3-a456-426614174000';
+        // Gera prefixos completamente aleatórios
+        $generateRandomPrefix = function(): string {
+            $wordCount = rand(1, 3); // 1 a 3 palavras no prefixo
+            $words = [];
 
+            for ($i = 0; $i < $wordCount; $i++) {
+                $wordLength = rand(3, 8); // palavras de 3 a 8 caracteres
+                $word = '';
+                for ($j = 0; $j < $wordLength; $j++) {
+                    $word .= chr(rand(65, 90)); // A-Z (65-90 na tabela ASCII)
+                }
+                $words[] = $word;
+            }
+
+            return implode('-', $words);
+        };
+
+        $randomPrefix = $generateRandomPrefix();
+
+        // Gera UUIDs aleatórios (incluindo caracteres não-hexadecimais para testar a regex)
+        $uuidChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomUuid = sprintf(
+            '%s-%s-%s-%s-%s',
+            substr(str_shuffle($uuidChars), 0, 8),
+            substr(str_shuffle($uuidChars), 0, 4),
+            substr(str_shuffle($uuidChars), 0, 4),
+            substr(str_shuffle($uuidChars), 0, 4),
+            substr(str_shuffle($uuidChars), 0, 12)
+        );
+
+        $prefixedUuid = "{$randomPrefix}-{$randomUuid}";
+
+        // Casos de teste estático para garantir consistência
+        $billUuid = 'BILL-123e4567-e89b-12d3-a456-426614174000';
+        $userUuid = 'USER-abc1234d-e56f-78g9-h012-345678901234';
+        $companyUuid = 'COMPANY-ADMIN-456e7890-f12a-34b5-c678-901234567890';
+
+        // Gera mais alguns prefixos aleatórios para testes variados
+        $randomPrefix2 = $generateRandomPrefix();
+        $randomUuid2 = sprintf(
+            '%s-%s-%s-%s-%s',
+            substr(str_shuffle($uuidChars), 0, 8),
+            substr(str_shuffle($uuidChars), 0, 4),
+            substr(str_shuffle($uuidChars), 0, 4),
+            substr(str_shuffle($uuidChars), 0, 4),
+            substr(str_shuffle($uuidChars), 0, 12)
+        );
+        $prefixedUuid2 = "{$randomPrefix2}-{$randomUuid2}";
+
+        // Testes básicos
         self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
-        self::assertSame('/v2/test/<BILL-UUID>', Uri::sanitize("/v2/test/{$billUuid}"));
-        self::assertSame('/v3/test/<BILL-UUID>/bar', Uri::sanitize("/v3/test/{$billUuid}/bar"));
-        self::assertSame('/v4/test/<BILL-UUID>/bar/<BILL-UUID>/', Uri::sanitize("/v4/test/{$billUuid}/bar/{$billUuid}/"));
-        self::assertSame('/v5/test/<BILL-UUID>/<BILL-UUID>', Uri::sanitize("/v5/test/{$billUuid}/{$billUuid}"));
-        self::assertSame('/v6/test/<BILL-UUID>/<BILL-UUID>/', Uri::sanitize("/v6/test/{$billUuid}/{$billUuid}/"));
-        self::assertSame('/v7/test/<BILL-UUID>/<BILL-UUID>/<BILL-UUID>', Uri::sanitize("/v7/test/{$billUuid}/{$billUuid}/{$billUuid}"));
-        self::assertSame('/v8/test/<BILL-UUID>/<BILL-UUID>/<BILL-UUID>/', Uri::sanitize("/v8/test/{$billUuid}/{$billUuid}/{$billUuid}/"));
+
+        // Testes com prefixos randômicos
+        self::assertSame('/v2/test/<PREFIXED-UUID>', Uri::sanitize("/v2/test/{$prefixedUuid}"));
+        self::assertSame('/v3/test/<PREFIXED-UUID>/bar', Uri::sanitize("/v3/test/{$prefixedUuid}/bar"));
+        self::assertSame('/v4/test/<PREFIXED-UUID>/bar/<PREFIXED-UUID>/', Uri::sanitize("/v4/test/{$prefixedUuid}/bar/{$prefixedUuid}/"));
+
+        // Testes com casos estáticos conhecidos
+        self::assertSame('/v2/test/<PREFIXED-UUID>', Uri::sanitize("/v2/test/{$billUuid}"));
+        self::assertSame('/v3/test/<PREFIXED-UUID>/bar', Uri::sanitize("/v3/test/{$billUuid}/bar"));
+        self::assertSame('/v4/test/<PREFIXED-UUID>/bar/<PREFIXED-UUID>/', Uri::sanitize("/v4/test/{$billUuid}/bar/{$billUuid}/"));
+
+        // Testes com UUID não-hexadecimal
+        self::assertSame('/v2/test/<PREFIXED-UUID>', Uri::sanitize("/v2/test/{$userUuid}"));
+        self::assertSame('/v3/test/<PREFIXED-UUID>/bar', Uri::sanitize("/v3/test/{$userUuid}/bar"));
+
+        // Testes com prefixo composto
+        self::assertSame('/v2/test/<PREFIXED-UUID>', Uri::sanitize("/v2/test/{$companyUuid}"));
+        self::assertSame('/v3/test/<PREFIXED-UUID>/bar', Uri::sanitize("/v3/test/{$companyUuid}/bar"));
+
+        // Testes com múltiplos UUIDs (randômicos + estáticos)
+        self::assertSame('/v5/test/<PREFIXED-UUID>/<PREFIXED-UUID>', Uri::sanitize("/v5/test/{$prefixedUuid}/{$billUuid}"));
+        self::assertSame('/v6/test/<PREFIXED-UUID>/<PREFIXED-UUID>/', Uri::sanitize("/v6/test/{$billUuid}/{$prefixedUuid}/"));
+        self::assertSame('/v7/test/<PREFIXED-UUID>/<PREFIXED-UUID>/<PREFIXED-UUID>', Uri::sanitize("/v7/test/{$prefixedUuid}/{$billUuid}/{$userUuid}"));
+        self::assertSame('/v8/test/<PREFIXED-UUID>/<PREFIXED-UUID>/<PREFIXED-UUID>/', Uri::sanitize("/v8/test/{$billUuid}/{$userUuid}/{$prefixedUuid}/"));
+
+        // Testes com dois prefixos aleatórios diferentes
+        self::assertSame('/v9/test/<PREFIXED-UUID>/<PREFIXED-UUID>', Uri::sanitize("/v9/test/{$prefixedUuid}/{$prefixedUuid2}"));
+        self::assertSame('/v10/test/<PREFIXED-UUID>/<PREFIXED-UUID>/<PREFIXED-UUID>/', Uri::sanitize("/v10/test/{$prefixedUuid}/{$prefixedUuid2}/{$companyUuid}/"));
+
+        // Casos edge: diferentes contextos de API
+        self::assertSame('/users/<PREFIXED-UUID>/profile', Uri::sanitize("/users/{$prefixedUuid}/profile"));
+        self::assertSame('/api/v1/bills/<PREFIXED-UUID>/details', Uri::sanitize("/api/v1/bills/{$billUuid}/details"));
+        self::assertSame('/companies/<PREFIXED-UUID>/admin/<PREFIXED-UUID>/settings', Uri::sanitize("/companies/{$prefixedUuid2}/admin/{$prefixedUuid}/settings"));
+
+        // Teste sem barra final
+        self::assertSame('/test/<PREFIXED-UUID>', Uri::sanitize("/test/{$prefixedUuid}"));
+
+        // Testes com prefixos de diferentes tamanhos
+        self::assertSame('/short/<PREFIXED-UUID>', Uri::sanitize("/short/{$prefixedUuid}"));
+        self::assertSame('/long/<PREFIXED-UUID>/path', Uri::sanitize("/long/{$prefixedUuid2}/path"));
     }
 }
