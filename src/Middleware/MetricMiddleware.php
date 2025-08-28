@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Hyperf\Metric\Middleware;
 
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\HttpMessage\Exception\HttpException;
 use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\Metric\Metric;
 use Hyperf\Metric\Support\Uri;
@@ -59,6 +60,13 @@ class MetricMiddleware implements MiddlewareInterface
             $timer->end($labels);
 
             return $response;
+        } catch (HttpException $httpException) {
+
+            // HttpExceptions are valid HTTP responses, not internal errors
+            $labels['request_status'] = (string) $httpException->getStatusCode();
+            $timer->end($labels);
+
+            throw $httpException;
         } catch (Throwable $exception) {
             $this->countException($request, $exception);
             $timer->end($labels);
