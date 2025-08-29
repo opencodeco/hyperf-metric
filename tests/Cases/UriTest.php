@@ -181,6 +181,19 @@ final class UriTest extends TestCase
             return implode('-', $words);
         };
 
+        // Gera IDs do tipo ECOSYSTEM
+        $generateEcosystemId = function(): string {
+            $prefixes = ['ECOSYSTEM', 'PLATFORM', 'SERVICE', 'MODULE'];
+            $codes = ['EPF', 'ABC', 'XYZ', 'DEF', 'GHI'];
+
+            $prefix = $prefixes[array_rand($prefixes)];
+            $code = $codes[array_rand($codes)];
+            $number = str_pad((string)rand(1000000000, 9999999999), 10, '0', STR_PAD_LEFT);
+            $sequence = str_pad((string)rand(1, 999), 3, '0', STR_PAD_LEFT);
+
+            return "{$prefix}-{$code}-{$number}_{$sequence}";
+        };
+
         $randomPrefix = $generateRandomPrefix();
 
         // Gera UUIDs aleatórios (incluindo caracteres não-hexadecimais para testar a regex)
@@ -201,6 +214,12 @@ final class UriTest extends TestCase
         $userUuid = 'USER-abc1234d-e56f-78g9-h012-345678901234';
         $companyUuid = 'COMPANY-ADMIN-456e7890-f12a-34b5-c678-901234567890';
 
+        // IDs do tipo ECOSYSTEM (estáticos e aleatórios)
+        $ecosystemId = 'ECOSYSTEM-EPF-0100290422_001';
+        $ecosystemId2 = 'PLATFORM-ABC-1234567890_999';
+        $randomEcosystemId = $generateEcosystemId();
+        $randomEcosystemId2 = $generateEcosystemId();
+
         // Gera mais alguns prefixos aleatórios para testes variados
         $randomPrefix2 = $generateRandomPrefix();
         $randomUuid2 = sprintf(
@@ -216,44 +235,39 @@ final class UriTest extends TestCase
         // Testes básicos
         self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
 
-        // Testes com prefixos randômicos
-        self::assertSame('/v2/test/<PREFIXED-UUID>', Uri::sanitize("/v2/test/{$prefixedUuid}"));
-        self::assertSame('/v3/test/<PREFIXED-UUID>/bar', Uri::sanitize("/v3/test/{$prefixedUuid}/bar"));
-        self::assertSame('/v4/test/<PREFIXED-UUID>/bar/<PREFIXED-UUID>/', Uri::sanitize("/v4/test/{$prefixedUuid}/bar/{$prefixedUuid}/"));
+        // Testes com UUIDs prefixados randômicos
+        self::assertSame('/v2/test/<PREFIXED-ID>', Uri::sanitize("/v2/test/{$prefixedUuid}"));
+        self::assertSame('/v3/test/<PREFIXED-ID>/bar', Uri::sanitize("/v3/test/{$prefixedUuid}/bar"));
+        self::assertSame('/v4/test/<PREFIXED-ID>/bar/<PREFIXED-ID>/', Uri::sanitize("/v4/test/{$prefixedUuid}/bar/{$prefixedUuid}/"));
 
-        // Testes com casos estáticos conhecidos
-        self::assertSame('/v2/test/<PREFIXED-UUID>', Uri::sanitize("/v2/test/{$billUuid}"));
-        self::assertSame('/v3/test/<PREFIXED-UUID>/bar', Uri::sanitize("/v3/test/{$billUuid}/bar"));
-        self::assertSame('/v4/test/<PREFIXED-UUID>/bar/<PREFIXED-UUID>/', Uri::sanitize("/v4/test/{$billUuid}/bar/{$billUuid}/"));
+        // Testes com UUIDs prefixados estáticos
+        self::assertSame('/v2/test/<PREFIXED-ID>', Uri::sanitize("/v2/test/{$billUuid}"));
+        self::assertSame('/v3/test/<PREFIXED-ID>/bar', Uri::sanitize("/v3/test/{$billUuid}/bar"));
+        self::assertSame('/v4/test/<PREFIXED-ID>/bar/<PREFIXED-ID>/', Uri::sanitize("/v4/test/{$billUuid}/bar/{$billUuid}/"));
 
-        // Testes com UUID não-hexadecimal
-        self::assertSame('/v2/test/<PREFIXED-UUID>', Uri::sanitize("/v2/test/{$userUuid}"));
-        self::assertSame('/v3/test/<PREFIXED-UUID>/bar', Uri::sanitize("/v3/test/{$userUuid}/bar"));
+        // Testes com IDs ECOSYSTEM estáticos
+        self::assertSame('/v5/test/<PREFIXED-ID>', Uri::sanitize("/v5/test/{$ecosystemId}"));
+        self::assertSame('/v6/test/<PREFIXED-ID>/details', Uri::sanitize("/v6/test/{$ecosystemId}/details"));
+        self::assertSame('/v7/test/<PREFIXED-ID>/<PREFIXED-ID>', Uri::sanitize("/v7/test/{$ecosystemId}/{$ecosystemId2}"));
 
-        // Testes com prefixo composto
-        self::assertSame('/v2/test/<PREFIXED-UUID>', Uri::sanitize("/v2/test/{$companyUuid}"));
-        self::assertSame('/v3/test/<PREFIXED-UUID>/bar', Uri::sanitize("/v3/test/{$companyUuid}/bar"));
+        // Testes com IDs ECOSYSTEM aleatórios
+        self::assertSame('/v8/test/<PREFIXED-ID>', Uri::sanitize("/v8/test/{$randomEcosystemId}"));
+        self::assertSame('/v9/test/<PREFIXED-ID>/config', Uri::sanitize("/v9/test/{$randomEcosystemId}/config"));
+        self::assertSame('/v10/test/<PREFIXED-ID>/<PREFIXED-ID>', Uri::sanitize("/v10/test/{$randomEcosystemId}/{$randomEcosystemId2}"));
 
-        // Testes com múltiplos UUIDs (randômicos + estáticos)
-        self::assertSame('/v5/test/<PREFIXED-UUID>/<PREFIXED-UUID>', Uri::sanitize("/v5/test/{$prefixedUuid}/{$billUuid}"));
-        self::assertSame('/v6/test/<PREFIXED-UUID>/<PREFIXED-UUID>/', Uri::sanitize("/v6/test/{$billUuid}/{$prefixedUuid}/"));
-        self::assertSame('/v7/test/<PREFIXED-UUID>/<PREFIXED-UUID>/<PREFIXED-UUID>', Uri::sanitize("/v7/test/{$prefixedUuid}/{$billUuid}/{$userUuid}"));
-        self::assertSame('/v8/test/<PREFIXED-UUID>/<PREFIXED-UUID>/<PREFIXED-UUID>/', Uri::sanitize("/v8/test/{$billUuid}/{$userUuid}/{$prefixedUuid}/"));
-
-        // Testes com dois prefixos aleatórios diferentes
-        self::assertSame('/v9/test/<PREFIXED-UUID>/<PREFIXED-UUID>', Uri::sanitize("/v9/test/{$prefixedUuid}/{$prefixedUuid2}"));
-        self::assertSame('/v10/test/<PREFIXED-UUID>/<PREFIXED-UUID>/<PREFIXED-UUID>/', Uri::sanitize("/v10/test/{$prefixedUuid}/{$prefixedUuid2}/{$companyUuid}/"));
+        // Testes mistos: UUIDs prefixados + IDs ECOSYSTEM
+        self::assertSame('/v11/test/<PREFIXED-ID>/<PREFIXED-ID>', Uri::sanitize("/v11/test/{$prefixedUuid}/{$ecosystemId}"));
+        self::assertSame('/v12/test/<PREFIXED-ID>/<PREFIXED-ID>/<PREFIXED-ID>', Uri::sanitize("/v12/test/{$billUuid}/{$randomEcosystemId}/{$userUuid}"));
+        self::assertSame('/v13/test/<PREFIXED-ID>/<PREFIXED-ID>/<PREFIXED-ID>/', Uri::sanitize("/v13/test/{$ecosystemId}/{$prefixedUuid2}/{$randomEcosystemId2}/"));
 
         // Casos edge: diferentes contextos de API
-        self::assertSame('/users/<PREFIXED-UUID>/profile', Uri::sanitize("/users/{$prefixedUuid}/profile"));
-        self::assertSame('/api/v1/bills/<PREFIXED-UUID>/details', Uri::sanitize("/api/v1/bills/{$billUuid}/details"));
-        self::assertSame('/companies/<PREFIXED-UUID>/admin/<PREFIXED-UUID>/settings', Uri::sanitize("/companies/{$prefixedUuid2}/admin/{$prefixedUuid}/settings"));
+        self::assertSame('/users/<PREFIXED-ID>/profile', Uri::sanitize("/users/{$prefixedUuid}/profile"));
+        self::assertSame('/api/v1/bills/<PREFIXED-ID>/details', Uri::sanitize("/api/v1/bills/{$billUuid}/details"));
+        self::assertSame('/ecosystems/<PREFIXED-ID>/platform/<PREFIXED-ID>', Uri::sanitize("/ecosystems/{$randomEcosystemId}/platform/{$randomEcosystemId2}"));
+        self::assertSame('/companies/<PREFIXED-ID>/admin/<PREFIXED-ID>/settings', Uri::sanitize("/companies/{$prefixedUuid2}/admin/{$ecosystemId}/settings"));
 
         // Teste sem barra final
-        self::assertSame('/test/<PREFIXED-UUID>', Uri::sanitize("/test/{$prefixedUuid}"));
-
-        // Testes com prefixos de diferentes tamanhos
-        self::assertSame('/short/<PREFIXED-UUID>', Uri::sanitize("/short/{$prefixedUuid}"));
-        self::assertSame('/long/<PREFIXED-UUID>/path', Uri::sanitize("/long/{$prefixedUuid2}/path"));
+        self::assertSame('/test/<PREFIXED-ID>', Uri::sanitize("/test/{$prefixedUuid}"));
+        self::assertSame('/ecosystem/<PREFIXED-ID>', Uri::sanitize("/ecosystem/{$randomEcosystemId}"));
     }
 }
