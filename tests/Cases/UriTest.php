@@ -184,14 +184,19 @@ final class UriTest extends TestCase
         // Gera IDs do tipo ECOSYSTEM
         $generateEcosystemId = function(): string {
             $prefixes = ['ECOSYSTEM', 'PLATFORM', 'SERVICE', 'MODULE'];
-            $codes = ['EPF', 'ABC', 'XYZ', 'DEF', 'GHI'];
+            $codes = ['EPF', 'ABC', 'XYZ', 'DEF', 'GHI', 'ESF'];
 
             $prefix = $prefixes[array_rand($prefixes)];
             $code = $codes[array_rand($codes)];
-            $number = str_pad((string)rand(1000000000, 9999999999), 10, '0', STR_PAD_LEFT);
-            $sequence = str_pad((string)rand(1, 999), 3, '0', STR_PAD_LEFT);
+            $number = (string)rand(100000000, 9999999999); // 9-10 dígitos
 
-            return "{$prefix}-{$code}-{$number}_{$sequence}";
+            // 50% de chance de ter sequência final
+            if (rand(0, 1)) {
+                $sequence = str_pad((string)rand(1, 999), 3, '0', STR_PAD_LEFT);
+                return "{$prefix}-{$code}-{$number}_{$sequence}";
+            }
+
+            return "{$prefix}-{$code}-{$number}";
         };
 
         $randomPrefix = $generateRandomPrefix();
