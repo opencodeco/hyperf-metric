@@ -32,6 +32,21 @@ final class UriTest extends TestCase
         self::assertSame('/v8/test/<NUMBER>/<NUMBER>/<NUMBER>/', Uri::sanitize('/v8/test/123/456/789/'));
     }
 
+    public function testSanitizePhoneNumber(): void
+    {
+        $phoneNumber = '+5511983999292';
+        $phoneNumber2 = '+9607392675';
+
+        self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
+        self::assertSame('/v2/test/<PHONE-NUMBER>', Uri::sanitize("/v2/test/{$phoneNumber}"));
+        self::assertSame('/v3/test/<PHONE-NUMBER>/bar', Uri::sanitize("/v3/test/{$phoneNumber}/bar"));
+        self::assertSame('/v4/test/<PHONE-NUMBER>/bar/<PHONE-NUMBER>/', Uri::sanitize("/v4/test/{$phoneNumber}/bar/{$phoneNumber2}/"));
+        self::assertSame('/v5/test/<PHONE-NUMBER>/<PHONE-NUMBER>', Uri::sanitize("/v5/test/$phoneNumber/$phoneNumber2"));
+        self::assertSame('/v6/test/<PHONE-NUMBER>/<PHONE-NUMBER>/', Uri::sanitize("/v6/test/$phoneNumber/$phoneNumber2/"));
+        self::assertSame('/v7/test/<PHONE-NUMBER>/<PHONE-NUMBER>/<PHONE-NUMBER>', Uri::sanitize("/v7/test/$phoneNumber/$phoneNumber2/$phoneNumber"));
+        self::assertSame('/v8/test/<PHONE-NUMBER>/<PHONE-NUMBER>/<PHONE-NUMBER>/', Uri::sanitize("/v8/test/$phoneNumber/$phoneNumber2/$phoneNumber/"));
+    }
+
     public function testSanitizeLicensePlatesStrings(): void
     {
         self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
@@ -160,6 +175,21 @@ final class UriTest extends TestCase
         self::assertSame('/v5/test/<EXTERNAL-ID>/<EXTERNAL-ID>', Uri::sanitize('/v5/test/RR2101818220123720H9KJTERfw1a/RN2401818220250720G4KJTQyU6Ds'));
         self::assertSame('/v7/test/<EXTERNAL-ID>/<EXTERNAL-ID>/<EXTERNAL-ID>/', Uri::sanitize('/v7/test/RR2101818220123720H9KJTERfw1a/RN2001818220123720H9KJTERBd52/RR2123818220123730H9KJTERBd52/'));
         self::assertSame('/v9/test/<EXTERNAL-ID>/bar/<NUMBER>', Uri::sanitize('/v9/test/RR2101818220123720H9KJTERfw1a/bar/12345'));
+    }
+
+    public function testSanitizeEmail(): void
+    {
+        $email = 'abcdwxyz@fghijk.com';
+        $email2 = 'elmnopq@rstuvw.com.br';
+
+        self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
+        self::assertSame('/v2/test/<EMAIL>', Uri::sanitize("/v2/test/{$email}"));
+        self::assertSame('/v3/test/<EMAIL>/bar', Uri::sanitize("/v3/test/{$email}/bar"));
+        self::assertSame('/v4/test/<EMAIL>/bar/<EMAIL>/', Uri::sanitize("/v4/test/{$email}/bar/{$email2}/"));
+        self::assertSame('/v5/test/<EMAIL>/<EMAIL>', Uri::sanitize("/v5/test/$email/$email2"));
+        self::assertSame('/v6/test/<EMAIL>/<EMAIL>/', Uri::sanitize("/v6/test/$email/$email2/"));
+        self::assertSame('/v7/test/<EMAIL>/<EMAIL>/<EMAIL>', Uri::sanitize("/v7/test/$email/$email2/$email"));
+        self::assertSame('/v8/test/<EMAIL>/<EMAIL>/<EMAIL>/', Uri::sanitize("/v8/test/$email/$email2/$email/"));
     }
 
     public function testClearUriPrefixedId(): void
