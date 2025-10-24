@@ -181,15 +181,18 @@ final class UriTest extends TestCase
     {
         $email = 'abcdwxyz@fghijk.com';
         $email2 = 'elmnopq@rstuvw.com.br';
+        $emailNumber = '123456elmnopq@rstuvw.com.br';
+        $emailLicensePlate = 'PET9349@gmail.com';
 
         self::assertSame('/v1/test', Uri::sanitize('/v1/test'));
-        self::assertSame('/v2/test/<EMAIL>', Uri::sanitize("/v2/test/{$email}"));
-        self::assertSame('/v3/test/<EMAIL>/bar', Uri::sanitize("/v3/test/{$email}/bar"));
-        self::assertSame('/v4/test/<EMAIL>/bar/<EMAIL>/', Uri::sanitize("/v4/test/{$email}/bar/{$email2}/"));
+        self::assertSame('/v2/test/<EMAIL>', Uri::sanitize("/v2/test/$email"));
+        self::assertSame('/v3/test/<EMAIL>/bar', Uri::sanitize("/v3/test/$email/bar"));
+        self::assertSame('/v4/test/<EMAIL>/bar/<EMAIL>/', Uri::sanitize("/v4/test/$email/bar/$email2/"));
         self::assertSame('/v5/test/<EMAIL>/<EMAIL>', Uri::sanitize("/v5/test/$email/$email2"));
         self::assertSame('/v6/test/<EMAIL>/<EMAIL>/', Uri::sanitize("/v6/test/$email/$email2/"));
         self::assertSame('/v7/test/<EMAIL>/<EMAIL>/<EMAIL>', Uri::sanitize("/v7/test/$email/$email2/$email"));
         self::assertSame('/v8/test/<EMAIL>/<EMAIL>/<EMAIL>/', Uri::sanitize("/v8/test/$email/$email2/$email/"));
+        self::assertSame('/v9/test/<EMAIL>/<EMAIL>/', Uri::sanitize("/v9/test/$emailNumber/$emailLicensePlate/"));
     }
 
     public function testClearUriPrefixedId(): void
